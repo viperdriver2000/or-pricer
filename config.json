@@ -47,6 +47,9 @@
     "top": [
       "openai/gpt-5-nano",
       "openai/gpt-5.6-luna",
+      "meta-llama/llama-4-scout",
+      "meta-llama/llama-3.3-70b-instruct",
+      "meta-llama/llama-4-maverick",
       "openai/gpt-5.6-terra",
       "openai/gpt-5.6-sol",
       "openai/gpt-5-mini",
