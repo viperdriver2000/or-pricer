@@ -1,0 +1,15 @@
+[project]
+name = "or-pricer"
+version = "1.0.0"
+description = "OpenRouter Model Pricing CLI & MCP Server"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28",
+]
+
+[project.scripts]
+or-pricer = "or_pricer.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

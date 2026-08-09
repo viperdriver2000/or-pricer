@@ -1,0 +1,51 @@
+{
+  "groups": {
+    "china": [
+      "deepseek/deepseek-v4-pro",
+      "deepseek/deepseek-v4-flash-latest",
+      "deepseek/deepseek-v4-flash-0731",
+      "qwen/qwen3.8-max",
+      "qwen/qwen3.7-max",
+      "qwen/qwen3.7-plus",
+      "qwen/qwen3.7-flash",
+      "minimax/minimax-m2",
+      "moonshotai/kimi-k2.5"
+    ],
+    "europe": [
+      "mistralai/mistral-small-3.1-24b-instruct",
+      "mistralai/mistral-large-2",
+      "mistralai/mistral-medium"
+    ],
+    "dsgvo": [
+      "mistralai/mistral-small-3.1-24b-instruct",
+      "mistralai/mistral-large-2",
+      "mistralai/mistral-medium"
+    ],
+    "free": [
+      "google/gemma-4-26b-a4b-it:free",
+      "google/gemma-4-31b-it:free",
+      "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "nvidia/nemotron-3-super-120b-a12b:free",
+      "nvidia/nemotron-3-nano-30b-a3b:free",
+      "openai/gpt-oss-20b:free",
+      "cohere/north-mini-code:free",
+      "poolside/laguna-s-2.1:free",
+      "inclusionai/ling-3.0-tiny:free"
+    ],
+    "top": [
+      "anthropic/claude-opus-5",
+      "anthropic/claude-sonnet-5",
+      "openai/gpt-4o",
+      "openai/gpt-4.1",
+      "google/gemini-3.6-flash",
+      "google/gemini-3.5-pro",
+      "deepseek/deepseek-v4-pro",
+      "qwen/qwen3.8-max"
+    ]
+  },
+  "cache_ttl_hours": 12,
+  "display": {
+    "unit": "1M tokens",
+    "currency": "USD"
+  }
+}

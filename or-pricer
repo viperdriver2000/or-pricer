@@ -1,0 +1,16 @@
+#!/bin/bash
+# or-pricer — OpenRouter Model Pricing Checker
+#
+# Usage:
+#   or-pricer                    Dashboard-Übersicht
+#   or-pricer -g china           China-Modelle
+#   or-pricer -t                 Trending
+#   or-pricer --pick             Interaktive Auswahl
+#
+# Setzt voraus: Python 3.12.13 mit httpx (pyenv)
+# Cache: ~/.cache/or-pricer/cache.json
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PYTHON=~/.pyenv/versions/3.12.13/bin/python3
+
+exec "$PYTHON" -m or_pricer "$@"
