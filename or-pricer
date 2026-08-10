@@ -10,7 +10,8 @@
 # Setzt voraus: Python 3.12.13 mit httpx (pyenv)
 # Cache: ~/.cache/or-pricer/cache.json
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 PYTHON=~/.pyenv/versions/3.12.13/bin/python3
 
+cd "$SCRIPT_DIR"
 exec "$PYTHON" -m or_pricer "$@"
