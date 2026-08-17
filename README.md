@@ -20,11 +20,14 @@ uv tool install --from git+https://github.com/viperdriver2000/or-pricer.git
 ## Quick Start
 
 ```bash
-./or-pricer                  # dashboard of your watch groups
+./or-pricer                  # dashboard of all watch groups (provider + opencode cmd per row)
 ./or-pricer -t               # top 20 most-used models
 ./or-pricer -c               # cheapest 30 models
 ./or-pricer -g china         # chinese models
+./or-pricer -g us            # google / openai / anthropic / meta / xai
+./or-pricer -g privacy       # zero-retention, no-training providers
 ./or-pricer -s "claude"      # search by name
+./or-pricer -p deepseek/deepseek-v4-pro   # hosting providers + privacy flags
 ./or-pricer --free           # free models only
 ./or-pricer --pick           # interactive pick → opencode -m ...
 ```
@@ -37,13 +40,15 @@ Usage: or-pricer [OPTIONS]
 Without options: dashboard overview of all watch groups.
 
 Options:
-  -g, --group NAME      Show group (china, europe, dsgvo, top, free)
+  -g, --group NAME      Show group (china, europe, us, top, free, programming, privacy)
   -t, --trending        Top 20 most-used models
   -c, --cheapest        Cheapest 30 models
   -s, --search TERM     Search by name or description
-  -i, --info ID         Detailed info for one model
+  -i, --info ID         Detailed info for one model (+ hosting providers)
+  -p, --providers ID    Hosting providers for one model with privacy flags
   --free                Free models only (:free variants)
   --supported PARAMS    Filter by supported params (e.g. "tools,temperature")
+  --opencode            Print ready-to-use opencode -m commands
   --pick                Interactive selection → prints opencode -m command
   --no-cache            Bypass 12h cache, fetch fresh
   -o, --output FORMAT   Table or JSON output (table|json)
@@ -53,39 +58,47 @@ Options:
 ### Examples
 
 ```bash
-# China group, sorted by price
+# China group, sorted by price (shows provider + opencode command)
 $ or-pricer -g china
 
 === CHINA ===
 
-Model                               Prompt/1M  Compl/1M  Context  Cache R  Cache W
-------------------------------------------------------------------------------------
-qwen/qwen3.7-flash                  $0.03      $0.13     1M       $0.01    $0.04
-deepseek/deepseek-v4-flash-0731     $0.09      $0.18     1M       $0.02    $-
-deepseek/deepseek-v4-pro            $0.43      $0.87     1M       $0.00    $-
-qwen/qwen3.7-max                    $1.48      $4.42     1M       $0.29    $1.84
-qwen/qwen3.8-max                    $2.00      $6.00     1M       $0.25    $2.50
+Provider    Model                               Prompt/1M  Compl/1M  Context  Cache R  Cache W
+-----------------------------------------------------------------------------------------------
+qwen        qwen/qwen3.7-flash                  $0.03      $0.13     1M       $0.01    $0.04
+deepseek    deepseek/deepseek-v4-flash-0731     $0.14      $0.28     1M       $0.02    $-
+deepseek    deepseek/deepseek-v4-pro            $1.32      $3.96     1M       $0.04    $-
+qwen        qwen/qwen3.7-max                    $1.48      $4.42     1M       $0.29    $1.84
+
+In opencode auswählen: opencode -m openrouter/<model-id>
 ```
 
 ```bash
-# Detailed model info
-$ or-pricer -i deepseek/deepseek-v4-pro
+# Hosting providers with privacy flags
+$ or-pricer -p deepseek/deepseek-v4-pro
 
-Name:        deepseek/deepseek-v4-pro
-Full Name:   DeepSeek: DeepSeek V4 Pro
-Context:     1M
-Max Output:  384000
+=== Hoster fuer deepseek/deepseek-v4-pro ===
 
---- Pricing (per 1M tokens) ---
-  Prompt:           $0.43
-  Completion:       $0.87
-  Cache Read:       $0.00
-  Cache Write:      $-
+Provider         Train   Retains   HQ
+------------------------------------------
+DeepInfra        nein    nein      US
+CoreWeave        nein    nein      US
+Novita           nein    nein      US
+...
+DeepSeek         ja      ja        CN   ← trains on inputs
 
---- Capabilities ---
-  Input:  text
-  Output: text
-  Params: tools, reasoning, structured_outputs, temperature, ...
+Privacy-freundlich (kein Training, kein Retention): Azure, BaseTen, DeepInfra, Fireworks, ...
+Trainiert mit Inputs: DeepSeek
+```
+
+```bash
+# Ready-to-run opencode commands for all US models
+$ or-pricer -g us --opencode
+# US
+opencode -m openrouter/google/gemma-4-31b-it
+opencode -m openrouter/openai/gpt-5-nano
+opencode -m openrouter/anthropic/claude-sonnet-5
+...
 ```
 
 ## MCP Server
@@ -133,13 +146,20 @@ Edit `config.json` to customize watch groups:
 
 - Queries the **free** OpenRouter API at `/api/v1/models` (no auth required)
 - Caches results locally for 12 hours (`~/.cache/or-pricer/cache.json`)
-- Supports all OpenRouter sort modes: `most-popular`, `pricing-low-to-high`, `newest`, etc.
-- Provider region classification: Europe (DSGVO), USA, China, Asia
+- Hosting providers + privacy flags per model from the OpenRouter model page (`~/.cache/or-pricer/providers.json`)
+- Privacy classification: providers with zero data retention and no training on inputs
+- Provider region classification: Europe, USA, China, Asia
+
+## Tests
+
+```bash
+python3 tests/test_matching.py
+```
 
 ## Requirements
 
 - Python 3.12+
-- `httpx`
+- `httpx` (CLI), `mcp` (optional, for MCP server: `pip install ".[mcp]"`)
 
 ## License
 
