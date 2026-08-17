@@ -38,7 +38,7 @@ def or_show_group(group: str, refresh: bool = False) -> str:
     """Modelle einer Watch-Gruppe mit Preisen anzeigen.
 
     Args:
-        group: Gruppenname (z.B. 'china', 'europe', 'top', 'free', 'dsgvo')
+        group: Gruppenname (z.B. 'china', 'europe', 'google', 'free', 'top', 'programming', 'privacy')
         refresh: Cache ignorieren und frisch von API laden
     """
     config = load_config()
