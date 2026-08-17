@@ -178,7 +178,8 @@ def format_summary(groups: dict[str, list[str]], models: list[dict]) -> str:
                 prompt = format_price(p.get("prompt"))
                 compl = format_price(p.get("completion"))
                 ctx = format_context(m.get("context_length"))
-                lines.append(f"  {m['id']:<48} {prompt:>8}/{compl:<8} {ctx:>6} ctx")
+                prov = m["id"].split("/")[0].lstrip("~") if "/" in m["id"] else "-"
+                lines.append(f"  {prov:<14} {m['id']:<40} {prompt:>8}/{compl:<8} {ctx:>6} ctx")
         else:
             lines.append("  (keine Modelle)")
         lines.append("")
