@@ -2,6 +2,8 @@ import json
 import shutil
 from typing import Any
 
+from .models import find_best_model_match
+
 
 def format_price(price_str: str | float | None, per_million: bool = True) -> str:
     if price_str is None or price_str == "":
@@ -187,28 +189,7 @@ def _pricing_sort_key(m: dict) -> float:
 
 
 def _find_best_match(model_id: str, models: list[dict]) -> dict | None:
-    for m in models:
-        if m["id"] == model_id:
-            return m
-    alias_id = f"~{model_id}" if not model_id.startswith("~") else model_id
-    for m in models:
-        if m["id"] == alias_id:
-            return m
-    clean = model_id.lstrip("~")
-    for m in models:
-        if m["id"] == clean:
-            return m
-    base = model_id.split(":")[0].lstrip("~")
-    for m in models:
-        if m["id"] == base or m["id"] == f"~{base}":
-            return m
-    for m in models:
-        if m["id"].startswith(base) and ":" not in m["id"].split("/", 1)[1] if "/" in m["id"] else True:
-            return m
-    for m in models:
-        if m["id"].startswith(base):
-            return m
-    return None
+    return find_best_model_match(model_id, models)
 
 
 def _region_label(model_id: str) -> str:

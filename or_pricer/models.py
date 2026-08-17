@@ -1,7 +1,6 @@
 import json
 import time
 from pathlib import Path
-from typing import Any
 
 import httpx
 
@@ -10,6 +9,37 @@ from .config import get_cache_ttl
 CACHE_DIR = Path.home() / ".cache" / "or-pricer"
 CACHE_FILE = CACHE_DIR / "cache.json"
 API_URL = "https://openrouter.ai/api/v1/models"
+
+
+def find_best_model_match(model_id: str, models: list[dict]) -> dict | None:
+    """Find a model by exact id, alias, base slug, then fuzzy prefix match."""
+    for m in models:
+        if m["id"] == model_id:
+            return m
+    alias_id = f"~{model_id}" if not model_id.startswith("~") else model_id
+    for m in models:
+        if m["id"] == alias_id:
+            return m
+    clean = model_id.lstrip("~")
+    for m in models:
+        if m["id"] == clean:
+            return m
+    base = model_id.split(":")[0].lstrip("~")
+    for m in models:
+        if m["id"] == base or m["id"] == f"~{base}":
+            return m
+    for m in models:
+        mid = m["id"]
+        if "/" in mid:
+            if mid.startswith(base) and ":" not in mid.split("/", 1)[1]:
+                return m
+        else:
+            if mid.startswith(base):
+                return m
+    for m in models:
+        if m["id"].startswith(base):
+            return m
+    return None
 
 
 class OpenRouterClient:
@@ -66,17 +96,7 @@ class OpenRouterClient:
 
     @staticmethod
     def _find_best_fuzzy(model_id: str, models: list[dict]) -> dict | None:
-        base = model_id.split(":")[0].lstrip("~")
-        for m in models:
-            if m["id"] == base or m["id"] == f"~{base}":
-                return m
-        for m in models:
-            if m["id"].startswith(base) and ":" not in m["id"].split("/", 1)[1] if "/" in m["id"] else True:
-                return m
-        for m in models:
-            if m["id"].startswith(base):
-                return m
-        return None
+        return find_best_model_match(model_id, models)
 
     def filter_free(self, force_refresh: bool = False) -> list[dict]:
         models = self.fetch_models(force_refresh)
