@@ -6,6 +6,7 @@ import sys
 from .config import load_config, get_groups, get_cache_ttl
 from .display import format_table, format_model_detail, format_summary, to_json
 from .models import OpenRouterClient
+from .providers import fetch_model_providers, format_providers_table
 
 
 def main() -> None:
@@ -56,6 +57,11 @@ Beispiele:
         help="Detail-Ansicht eines Modells",
     )
     parser.add_argument(
+        "-p", "--providers",
+        metavar="ID",
+        help="Zeige Hoster/Anbieter fuer ein Modell (mit Privacy-Flags)",
+    )
+    parser.add_argument(
         "--free",
         action="store_true",
         help="Nur :free-Modelle",
@@ -102,9 +108,21 @@ Beispiele:
                 print(to_json(model))
             else:
                 print(format_model_detail(model))
+                print()
+                pdata = fetch_model_providers(args.info)
+                if pdata and pdata.get("providers"):
+                    print(format_providers_table(pdata))
         else:
             print(f"Modell '{args.info}' nicht gefunden.", file=sys.stderr)
             sys.exit(1)
+        return
+
+    if args.providers:
+        data = fetch_model_providers(args.providers, force_refresh=force_refresh)
+        if args.output == "json":
+            print(to_json(data))
+        else:
+            print(format_providers_table(data))
         return
 
     if args.free:
