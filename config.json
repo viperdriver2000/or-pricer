@@ -32,7 +32,7 @@
       "mistralai/mistral-large-2",
       "mistralai/mistral-medium"
     ],
-    "google": [
+    "us": [
       "google/gemma-4-31b-it",
       "google/gemma-4-26b-a4b-it",
       "google/gemma-3-27b-it",
@@ -40,7 +40,23 @@
       "google/gemma-3n-e4b-it",
       "google/gemini-3.7-flash",
       "google/gemini-3.6-flash",
-      "google/gemini-2.5-pro"
+      "google/gemini-2.5-pro",
+      "openai/gpt-5-nano",
+      "openai/gpt-5.6-luna",
+      "openai/gpt-5.6-terra",
+      "openai/gpt-5.6-sol",
+      "openai/gpt-5-mini",
+      "openai/gpt-4o",
+      "openai/o3",
+      "openai/o4-mini",
+      "anthropic/claude-haiku-4.5",
+      "anthropic/claude-sonnet-5",
+      "anthropic/claude-opus-5",
+      "meta-llama/llama-4-scout",
+      "meta-llama/llama-3.3-70b-instruct",
+      "meta-llama/llama-4-maverick",
+      "x-ai/grok-4.5",
+      "x-ai/grok-4.20"
     ],
     "free": [
       "google/gemma-4-26b-a4b-it:free",

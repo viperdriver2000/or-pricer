@@ -82,6 +82,11 @@ Beispiele:
         default="table",
         help="Ausgabeformat (table|json)",
     )
+    parser.add_argument(
+        "--opencode",
+        action="store_true",
+        help="Ausgabe als fertige opencode -m Kommandos (kombinierbar mit -g/-s/-t/-c/--free)",
+    )
 
     args = parser.parse_args()
     ttl = get_cache_ttl(config)
@@ -91,7 +96,9 @@ Beispiele:
     if args.info:
         model = client.get_model(args.info, force_refresh)
         if model:
-            if args.output == "json":
+            if args.opencode:
+                print(f"opencode -m openrouter/{model['id']}")
+            elif args.output == "json":
                 print(to_json(model))
             else:
                 print(format_model_detail(model))
@@ -103,38 +110,24 @@ Beispiele:
     if args.free:
         models = client.filter_free(force_refresh)
         models.sort(key=_sort_key)
-        if args.output == "json":
-            print(to_json(models))
-        else:
-            print(format_table(models))
+        _emit(models, args, title="Free-Modelle")
         return
 
     if args.supported:
         params = [p.strip() for p in args.supported.split(",")]
         models = client.filter_by_parameters(params, force_refresh)
         models.sort(key=_sort_key)
-        if args.output == "json":
-            print(to_json(models))
-        else:
-            print(format_table(models))
+        _emit(models, args, title=f"Modelle mit: {', '.join(params)}")
         return
 
     if args.trending:
         models = client.sort_by("most-popular", limit=20, force_refresh=force_refresh)
-        if args.output == "json":
-            print(to_json(models))
-        else:
-            print(f"=== Top 20 Meistgenutzte ===\n")
-            print(format_table(models))
+        _emit(models, args, title="Top 20 Meistgenutzte")
         return
 
     if args.cheapest:
         models = client.sort_by("pricing-low-to-high", limit=30, force_refresh=force_refresh)
-        if args.output == "json":
-            print(to_json(models))
-        else:
-            print(f"=== Guenstigste 30 Modelle ===\n")
-            print(format_table(models))
+        _emit(models, args, title="Guenstigste 30 Modelle")
         return
 
     if args.group:
@@ -161,21 +154,13 @@ Beispiele:
                 models.append(m)
         models.sort(key=_sort_key)
 
-        if args.output == "json":
-            print(to_json(models))
-        else:
-            print(f"=== {args.group.upper()} ===\n")
-            print(format_table(models))
+        _emit(models, args, title=args.group.upper())
         return
 
     if args.search:
         models = client.search(args.search, force_refresh)
         models.sort(key=_sort_key)
-        if args.output == "json":
-            print(to_json(models))
-        else:
-            print(f"=== Suche: '{args.search}' ({len(models)} Treffer) ===\n")
-            print(format_table(models))
+        _emit(models, args, title=f"Suche: '{args.search}' ({len(models)} Treffer)")
         return
 
     if args.pick:
@@ -203,6 +188,28 @@ def _sort_key(m: dict) -> float:
     prompt = float(p.get("prompt", 0) or 0)
     completion = float(p.get("completion", 0) or 0)
     return (prompt + completion) / 2
+
+
+def _print_opencode_commands(models: list[dict]) -> None:
+    if not models:
+        print("Keine Modelle gefunden.")
+        return
+    for m in models:
+        print(f"opencode -m openrouter/{m['id']}")
+
+
+def _emit(models: list[dict], args, title: str | None = None, summary: str | None = None) -> None:
+    if args.opencode:
+        if title:
+            print(f"# {title}")
+        _print_opencode_commands(models)
+        return
+    if args.output == "json":
+        print(to_json(models))
+        return
+    if title:
+        print(f"=== {title} ===\n")
+    print(format_table(models))
 
 
 def _interactive_pick(client: OpenRouterClient, force_refresh: bool) -> None:

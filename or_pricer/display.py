@@ -37,12 +37,13 @@ def format_table(
     models: list[dict],
     columns: list[str] | None = None,
     max_width_id: int = 45,
+    opencode_hint: bool = True,
 ) -> str:
     if not models:
         return "Keine Modelle gefunden."
 
     if columns is None:
-        columns = ["id", "prompt", "completion", "context", "cache_read", "cache_write"]
+        columns = ["provider", "id", "prompt", "completion", "context", "cache_read", "cache_write"]
 
     headers = {
         "id": "Model",
@@ -98,6 +99,10 @@ def format_table(
     lines = [header_line, "-" * len(header_line)]
     for row in rows:
         lines.append(format_row(row))
+
+    if opencode_hint:
+        lines.append("")
+        lines.append("In opencode auswählen: opencode -m openrouter/<model-id>  (z.B. opencode -m openrouter/deepseek/deepseek-v4-pro)")
 
     return "\n".join(lines)
 
